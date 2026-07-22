@@ -1,0 +1,9 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'engagement-system'
+include 'engagement-system-api', 'engagement-system-client', 'engagement-system-app'
