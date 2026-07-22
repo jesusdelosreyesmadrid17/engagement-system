@@ -1,5 +1,7 @@
 # Engagement Template Update Decision Slice
 
+Design document: [DESIGN.md](DESIGN.md)
+
 This repository implements one targeted vertical slice of the proposed Template Update Service:
 
 ```http
