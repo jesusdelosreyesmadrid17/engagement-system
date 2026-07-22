@@ -1,0 +1,27 @@
+%%{init: {"themeVariables": {"fontSize": "20px"}, "flowchart": {"useMaxWidth": false, "nodeSpacing": 55, "rankSpacing": 55}}}%%
+flowchart TB
+    Store[Publisher stores versioned template]
+    Event[Publish TemplatePublished event]
+    Consume[Template Update Service consumes event]
+    Catalog[Read current template catalog]
+    Version{Published version status}
+
+    Store --> Event
+    Event --> Consume
+    Consume --> Catalog
+    Catalog --> Version
+
+    Version -->|First known version| First[Create template catalog entry]
+    First --> Accepted[Mark publication processed]
+
+    Version -->|Newer version| Load[Load previous and new templates]
+    Load --> Compare[Calculate structured JSON diff]
+    Compare --> Summary[Generate and cache readable summary]
+    Summary --> Advance[Advance catalog latest version]
+    Advance --> Accepted
+
+    Version -->|Duplicate or older| Ignore[Ignore idempotently]
+    Ignore --> Existing[Keep existing catalog state]
+
+    Load -.->|Template unavailable| Retry[Retry event processing]
+    Compare -.->|Comparison fails| Retry

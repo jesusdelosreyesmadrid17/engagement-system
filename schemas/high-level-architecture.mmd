@@ -1,0 +1,24 @@
+%%{init: {"themeVariables": {"fontSize": "20px"}, "flowchart": {"useMaxWidth": false, "nodeSpacing": 65, "rankSpacing": 75}}}%%
+flowchart LR
+    Publisher[Existing Template Publisher]
+    TemplateDB[(Existing Template Database)]
+    Queue[AWS SQS]
+    Service[Template Update Service]
+    Metadata[(Metadata PostgreSQL)]
+    EngagementSystem[Existing Engagement System]
+    Dashboard[Engagement Dashboard]
+    User[Practitioner]
+
+    Publisher -->|Write template version| TemplateDB
+    Publisher -->|Publish TemplatePublished event| Queue
+    Queue -->|Consume event| Service
+    TemplateDB -->|Read two template versions| Service
+
+    EngagementSystem -->|Register engagement metadata| Service
+    EngagementSystem -->|Report completed decision| Service
+
+    User -->|Review updates| Dashboard
+    Dashboard -->|Query pending updates| Service
+    Dashboard -->|Apply or decline| EngagementSystem
+
+    Service -->|Store catalog, cursors, summaries, and audit| Metadata

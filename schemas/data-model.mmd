@@ -1,0 +1,41 @@
+%%{init: {"themeVariables": {"fontSize": "20px"}, "er": {"useMaxWidth": false, "layoutDirection": "TB", "minEntityWidth": 260, "minEntityHeight": 100, "entityPadding": 20, "diagramPadding": 30, "fontSize": 20}}}%%
+erDiagram
+    TEMPLATE_CATALOG ||--o{ ENGAGEMENT_TEMPLATE_STATE : tracks
+    TEMPLATE_CATALOG ||--o{ TEMPLATE_CHANGE_SUMMARY : caches
+    ENGAGEMENT_TEMPLATE_STATE ||--o{ UPDATE_DECISION : audits
+    TEMPLATE_CATALOG {
+        string template_id PK
+        long latest_version
+        instant published_at
+        instant updated_at
+        long lock_version
+    }
+    ENGAGEMENT_TEMPLATE_STATE {
+        string firm_id PK
+        string engagement_id PK
+        string template_id FK
+        long applied_version
+        long evaluated_through_version
+        instant created_at
+        instant updated_at
+        long lock_version
+    }
+    TEMPLATE_CHANGE_SUMMARY {
+        string template_id PK
+        long from_version PK
+        long to_version PK
+        text diff_json
+        text summary_text
+        instant generated_at
+    }
+    UPDATE_DECISION {
+        uuid decision_id PK
+        string firm_id FK
+        string engagement_id FK
+        string decision
+        long from_applied_version
+        long target_version
+        long resulting_applied_version
+        string decided_by
+        instant decided_at
+    }

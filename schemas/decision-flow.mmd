@@ -1,0 +1,30 @@
+%%{init: {"themeVariables": {"fontSize": "20px"}, "flowchart": {"useMaxWidth": false, "nodeSpacing": 55, "rankSpacing": 55}}}%%
+flowchart TB
+    Open[Practitioner opens update dashboard]
+    Query[Query pending updates for firm]
+    Read[Read version cursors and cached summaries]
+    Show[Display accumulated update impact]
+    Choose{Practitioner decision}
+    Process[Engagement System validates target version]
+    Outcome{Processing result}
+
+    Open --> Query
+    Query --> Read
+    Read --> Show
+    Show --> Choose
+    Choose -->|APPLY| Process
+    Choose -->|DECLINE| Process
+    Process --> Outcome
+
+    Outcome -->|APPLY completed| Apply[Set applied and evaluated cursors to target]
+    Outcome -->|DECLINE completed| Decline[Keep applied cursor and advance evaluated cursor]
+    Outcome -->|Failure| Failure[Do not change metadata]
+
+    Apply --> ApplyAudit[Append APPLY audit record]
+    Decline --> DeclineAudit[Append DECLINE audit record]
+    Failure --> Pending[Keep update pending]
+
+    ApplyAudit --> Concurrent{Newer version exists?}
+    DeclineAudit --> Concurrent
+    Concurrent -->|Yes| NewPending[Keep newer version pending]
+    Concurrent -->|No| Complete[Decision complete]
